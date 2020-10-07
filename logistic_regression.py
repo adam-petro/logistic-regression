@@ -90,6 +90,7 @@ class LogisticRegressionClassifier():
         """
         out = np.zeros(X.shape[0])
         ### YOUR CODE HERE 1 - 4 lines
+        out = X*w
         ### END CODE
         return out
     
