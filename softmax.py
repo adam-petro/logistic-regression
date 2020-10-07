@@ -26,6 +26,10 @@ def softmax(X):
     """
     res = np.zeros(X.shape)
     ### YOUR CODE HERE no for loops please
+    x_max = np.amax(X,axis=1,keepdims=True)
+    logsum = (np.log(np.sum(np.exp(X-x_max),axis=1,keepdims=True))+x_max)
+    res = X-logsum
+    res = np.exp(res)
     ### END CODE
     return res
 
@@ -65,6 +69,18 @@ class SoftmaxClassifier():
         grad = np.zeros(W.shape)*np.nan
         Yk = one_in_k_encoding(y, self.num_classes) # may help - otherwise you may remove it
         ### YOUR CODE HERE
+        ### YOUR CODE HERE 5 - 15 lines
+        cost=(-np.log(np.dot(y.T,softmax(np.dot(X,W)))))
+        temp1=softmax(np.dot(X,W))
+        temp2=(Yk-softmax(np.dot(X,W)))
+        temp3=np.dot(X.T,(Yk-softmax(np.dot(X,W))))
+        temp4 =X.T
+        # print()
+        grad=(-(1/len(y))*np.dot(X.T,(Yk-softmax(np.dot(X,W)))))
+
+        cost = (1/len(y))*np.sum(cost)
+        print("grad:",grad)
+
         ### END CODE
         return cost, grad
 
@@ -105,6 +121,7 @@ class SoftmaxClassifier():
         """
         out = 0
         ### YOUR CODE HERE 1-4 lines
+        out = (np.sum((self.predict(X)-Y)**2))/len(Y)
         ### END CODE
         return out
 
@@ -118,6 +135,7 @@ class SoftmaxClassifier():
         """
         out = None
         ### YOUR CODE HERE - 1-4 lines
+        out = softmax(np.dot(X.T,self.W))
         ### END CODE
         return out
 
@@ -158,6 +176,7 @@ def test_grad():
 
     
 if __name__ == "__main__":
-    test_encoding()
-    test_softmax()
+    # test_encoding()
+    # test_softmax()
     test_grad()
+    # print(softmax(np.array([[1,2,3]])))
