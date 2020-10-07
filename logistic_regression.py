@@ -139,7 +139,7 @@ class LogisticRegressionClassifier():
         s = 0
         ### YOUR CODE HERE 1 - 4 lines
         #least squares loss
-        print("(self.predict(X)-y):",(self.predict(X)-y))
+        # print("(self.predict(X)-y):",(self.predict(X)-y))
         s = (np.sum((self.predict(X)-y)**2))/len(y)
         ### END CODE
         return s
