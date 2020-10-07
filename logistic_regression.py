@@ -20,11 +20,12 @@ def logistic(z):
     assert logi.shape == z.shape
     return logi
 
-
 class LogisticRegressionClassifier():
 
     def __init__(self):
         self.w = None
+    
+    
 
     def cost_grad(self, X, y, w):
         """
@@ -42,9 +43,25 @@ class LogisticRegressionClassifier():
            grad: np.arrray shape(d, ) gradient of the average negative log likelihood at w 
         """
         cost = 0
+        c=[]
         grad = np.zeros(w.shape)
+        g=[]
         ### YOUR CODE HERE 5 - 15 lines
+        #Helper lambda for scalars
+        logi = lambda a: 1/(1+np.exp(-a))
+        for i in range(len(y)):
+            #computing the log of cost function
+            c.append(np.log(1+np.exp(np.dot(X[i],w.T)*-y[i])))
+            # calculate the gradient of each datapoint
+            g.append((-y[i]*X[i])*logi(-y[i]*np.dot(w.T,X[i])))
+        #doing the average of "negative log likelihood"
+        cost = (1/len(y))*np.sum(c)
+        #averaging the gradients
+
+        grad = (1/len(y))*np.sum(g,axis=0)
+
         ### END CODE
+        # print("computed gradient:",grad)
         assert grad.shape == w.shape
         return cost, grad
 
@@ -73,6 +90,22 @@ class LogisticRegressionClassifier():
         if w is None: w = np.zeros(X.shape[1])
         history = []        
         ### YOUR CODE HERE 14 - 20 lines
+        X_y = np.c_[X,y]
+        temp_y = np.array([])
+        temp_x = np.array([])
+        for i in range(epochs):
+            np.random.permutation(X_y)
+            n_b = int(np.floor(len(X_y)/batch_size))
+            # for j in range(int(np.floor(len(X_y)/batch_size))):
+            temp_x = X_y[:,:-1]
+            temp_y = X_y[:,-1]
+            # print("n_b",n_b)
+            # print("temp_x[:n_b]:",len(temp_x[:n_b]))
+            # print("temp_y[:n_b]:",len(temp_y[:n_b]))
+            cost,grad = self.cost_grad(temp_x[:n_b],(temp_y[:n_b]),w)
+            w = w-lr*grad
+            history.append(cost)
+            # print(w)
         ### END CODE
         self.w = w
         self.history = history
@@ -90,7 +123,10 @@ class LogisticRegressionClassifier():
         """
         out = np.zeros(X.shape[0])
         ### YOUR CODE HERE 1 - 4 lines
-        out = X*w
+        # print("self.w.T:",self.w.T.shape)
+        # print("X:",X.shape)
+        out = logistic(np.dot(X,self.w.T))
+        print(out.shape)
         ### END CODE
         return out
     
@@ -107,6 +143,9 @@ class LogisticRegressionClassifier():
         """
         s = 0
         ### YOUR CODE HERE 1 - 4 lines
+        #least squares loss
+        print("(self.predict(X)-y):",(self.predict(X)-y))
+        s = (np.sum((self.predict(X)-y)**2))/len(y)
         ### END CODE
         return s
         
@@ -149,7 +188,7 @@ def test_grad():
     
 if __name__ == '__main__':
     test_logistic()
-    # test_cost()
-    # test_grad()
+    test_cost()
+    test_grad()
     
     
