@@ -96,16 +96,11 @@ class LogisticRegressionClassifier():
         for i in range(epochs):
             np.random.permutation(X_y)
             n_b = int(np.floor(len(X_y)/batch_size))
-            # for j in range(int(np.floor(len(X_y)/batch_size))):
             temp_x = X_y[:,:-1]
             temp_y = X_y[:,-1]
-            # print("n_b",n_b)
-            # print("temp_x[:n_b]:",len(temp_x[:n_b]))
-            # print("temp_y[:n_b]:",len(temp_y[:n_b]))
             cost,grad = self.cost_grad(temp_x[:n_b],(temp_y[:n_b]),w)
             w = w-lr*grad
             history.append(cost)
-            # print(w)
         ### END CODE
         self.w = w
         self.history = history
