@@ -118,9 +118,10 @@ class LogisticRegressionClassifier():
         """
         out = np.zeros(X.shape[0])
         ### YOUR CODE HERE 1 - 4 lines
-        # print("self.w.T:",self.w.T.shape)
-        # print("X:",X.shape)
         out = logistic(np.dot(X,self.w.T))
+        out[out>0.5] = 1
+        out[out<0.5] = -1
+        
         print(out.shape)
         ### END CODE
         return out
@@ -140,7 +141,9 @@ class LogisticRegressionClassifier():
         ### YOUR CODE HERE 1 - 4 lines
         #least squares loss
         # print("(self.predict(X)-y):",(self.predict(X)-y))
-        s = (np.sum((self.predict(X)-y)**2))/len(y)
+        # s = (np.sum((self.predict(X)-y)**2))/len(y)
+        s = (self.predict(X)==y).mean()
+        print(y)
         ### END CODE
         return s
         
