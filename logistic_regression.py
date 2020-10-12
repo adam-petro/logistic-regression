@@ -25,8 +25,6 @@ class LogisticRegressionClassifier():
     def __init__(self):
         self.w = None
     
-    
-
     def cost_grad(self, X, y, w):
         """
         Compute the average negative log likelihood and gradient under the logistic regression model 
@@ -42,26 +40,29 @@ class LogisticRegressionClassifier():
            cost: scalar: the average negative log likelihood for logistic regression with data X, y 
            grad: np.arrray shape(d, ) gradient of the average negative log likelihood at w 
         """
-        cost = 0
-        c=[]
-        grad = np.zeros(w.shape)
-        g=[]
+        #Initialization step
+        cost = 0;grad = np.zeros(w.shape)
+        c=[];g=[]
+        
+        
         ### YOUR CODE HERE 5 - 15 lines
-        #Helper lambda for scalars
+        #Here we define the logistic function that works solely for scalars. 
         logi = lambda a: 1/(1+np.exp(-a))
+        
         for i in range(len(y)):
             #computing the log of cost function
             c.append(np.log(1+np.exp(np.dot(X[i],w.T)*-y[i])))
+            
             # calculate the gradient of each datapoint
             g.append((-y[i]*X[i])*logi(-y[i]*np.dot(w.T,X[i])))
+            
         #doing the average of "negative log likelihood"
         cost = (1/len(y))*np.sum(c)
+        
         #averaging the gradients
-
         grad = (1/len(y))*np.sum(g,axis=0)
 
         ### END CODE
-        # print("computed gradient:",grad)
         assert grad.shape == w.shape
         return cost, grad
 
@@ -87,19 +88,31 @@ class LogisticRegressionClassifier():
            w: numpy array shape (d,) learned weight vector w
            history: list/np.array len epochs - value of cost function after every epoch. You know for plotting
         """
+        #Initialization step
         if w is None: w = np.zeros(X.shape[1])
-        history = []        
+        history = [] 
+        
         ### YOUR CODE HERE 14 - 20 lines
+        #We combine the X and y lists to avoid messing up the pairing
         X_y = np.c_[X,y]
-        temp_y = np.array([])
-        temp_x = np.array([])
+        
+        #Calculate the number of elements in a mini-batch
+        n_b = int(np.floor(len(X_y)/batch_size))
+        
         for i in range(epochs):
+            #shuffle X_y into a random permutation
             np.random.permutation(X_y)
-            n_b = int(np.floor(len(X_y)/batch_size))
+            
+            #sepperate X and y after shuffle
             temp_x = X_y[:,:-1]
             temp_y = X_y[:,-1]
+            
+            #Insert only the first n_b elements into the cost_grad
             cost,grad = self.cost_grad(temp_x[:n_b],(temp_y[:n_b]),w)
+            
+            #Redefine w
             w = w-lr*grad
+    
             history.append(cost)
         ### END CODE
         self.w = w
@@ -119,10 +132,10 @@ class LogisticRegressionClassifier():
         out = np.zeros(X.shape[0])
         ### YOUR CODE HERE 1 - 4 lines
         out = logistic(np.dot(X,self.w.T))
+        #Put 1 or -1 depending on the certanty of the logistic function
         out[out>0.5] = 1
         out[out<0.5] = -1
         
-        print(out.shape)
         ### END CODE
         return out
     
@@ -139,11 +152,8 @@ class LogisticRegressionClassifier():
         """
         s = 0
         ### YOUR CODE HERE 1 - 4 lines
-        #least squares loss
-        # print("(self.predict(X)-y):",(self.predict(X)-y))
-        # s = (np.sum((self.predict(X)-y)**2))/len(y)
+        #Using the 0-1 loss approach
         s = (self.predict(X)==y).mean()
-        print(y)
         ### END CODE
         return s
         
