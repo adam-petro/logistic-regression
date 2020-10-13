@@ -40,9 +40,10 @@ def one_in_k_encoding(vec, k):
        vec: numpy array - data to encode
        k: int - number of classes to encode to (0,...,k-1)
     """
+    #print(vec)
     n = vec.shape[0]
     enc = np.zeros((n, k))
-    enc[np.arange(n), vec] = 1
+    enc[np.arange(n), vec.astype(int)] = 1
     return enc
     
 class SoftmaxClassifier():
@@ -67,14 +68,11 @@ class SoftmaxClassifier():
         """
         cost = np.nan
         grad = np.zeros(W.shape)*np.nan
-        Yk = (one_in_k_encoding(y, self.num_classes)) # may help - otherwise you may remove it
-        print(Yk)
-        ### YOUR CODE HERE
+        Yk = (one_in_k_encoding(y, self.num_classes)) # may help - otherwise you may remove
         ### YOUR CODE HERE 5 - 15 lines
-
         softmax_matrix = softmax(np.dot(X,W))
         cost = (-1/len(y))*np.sum(Yk*np.log(softmax_matrix))
-        grad=(-(1/len(y))*np.dot(X.T,(Yk-softmax_matrix)))
+        grad = (-(1/len(y))*np.dot(X.T,(Yk-softmax_matrix)))
         ### END CODE
         return cost, grad
 
@@ -98,7 +96,30 @@ class SoftmaxClassifier():
         """
         if W is None: W = np.zeros((X.shape[1], self.num_classes))
         history = []
-        ### YOUR CODE HERE
+        
+        ### YOUR CODE HERE 14 - 20 lines
+        #We combine the X and y lists to avoid messing up the pairing
+        X_y = np.c_[X,Y]
+        
+        #Calculate the number of elements in a mini-batch
+        n_b = int(np.floor(len(X_y)/batch_size))
+        
+        for i in range(epochs):
+            #shuffle X_y into a random permutation
+            np.random.permutation(X_y)
+            
+            #sepperate X and y after shuffle
+            temp_x = X_y[:,:-1]
+            temp_y = X_y[:,-1]
+            #print(temp_y[:n_b].shape)
+            #print(temp_x[:n_b].shape)
+            #Insert only the first n_b elements into the cost_grad
+            cost,grad = self.cost_grad(temp_x[:n_b],temp_y[:n_b],W)
+            
+            #Redefine w
+            W = W-lr*grad
+    
+            history.append(cost)
         ### END CODE
         self.W = W
         self.history = history
@@ -114,9 +135,9 @@ class SoftmaxClassifier():
            out: float - mean accuracy
         """
         out = 0
-        # YOUR CODE HERE 1-4 lines
-        # out = (np.sum((self.predict(X)-Y)**2))/len(Y)
-        out = (self.predict(X)==Y).mean()
+        #Yk = (one_in_k_encoding(Y, self.num_classes))
+        print(np.argmax(self.predict(X),axis=1))
+        out = (np.argmax(self.predict(X),axis=1)==Y).mean()
         ### END CODE
         return out
 
@@ -130,10 +151,9 @@ class SoftmaxClassifier():
         """
         out = None
         ### YOUR CODE HERE - 1-4 lines
-        out = softmax(np.dot(X.T,self.W))
+        out = softmax(np.dot(X,self.W))
         ### END CODE
         return out
-
 
 
 def test_encoding():
