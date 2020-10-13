@@ -136,7 +136,7 @@ class SoftmaxClassifier():
         """
         out = 0
         #Yk = (one_in_k_encoding(Y, self.num_classes))
-        print(np.argmax(self.predict(X),axis=1))
+        #print(np.argmax(self.predict(X),axis=1))
         out = (np.argmax(self.predict(X),axis=1)==Y).mean()
         ### END CODE
         return out
