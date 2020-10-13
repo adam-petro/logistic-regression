@@ -67,20 +67,14 @@ class SoftmaxClassifier():
         """
         cost = np.nan
         grad = np.zeros(W.shape)*np.nan
-        Yk = one_in_k_encoding(y, self.num_classes) # may help - otherwise you may remove it
+        Yk = (one_in_k_encoding(y, self.num_classes)) # may help - otherwise you may remove it
+        print(Yk)
         ### YOUR CODE HERE
         ### YOUR CODE HERE 5 - 15 lines
-        cost=(-np.log(np.dot(y.T,softmax(np.dot(X,W)))))
-        temp1=softmax(np.dot(X,W))
-        temp2=(Yk-softmax(np.dot(X,W)))
-        temp3=np.dot(X.T,(Yk-softmax(np.dot(X,W))))
-        temp4 =X.T
-        # print()
-        grad=(-(1/len(y))*np.dot(X.T,(Yk-softmax(np.dot(X,W)))))
 
-        cost = (1/len(y))*np.sum(cost)
-        print("grad:",grad)
-
+        softmax_matrix = softmax(np.dot(X,W))
+        cost = (-1/len(y))*np.sum(Yk*np.log(softmax_matrix))
+        grad=(-(1/len(y))*np.dot(X.T,(Yk-softmax_matrix)))
         ### END CODE
         return cost, grad
 
@@ -120,8 +114,9 @@ class SoftmaxClassifier():
            out: float - mean accuracy
         """
         out = 0
-        ### YOUR CODE HERE 1-4 lines
-        out = (np.sum((self.predict(X)-Y)**2))/len(Y)
+        # YOUR CODE HERE 1-4 lines
+        # out = (np.sum((self.predict(X)-Y)**2))/len(Y)
+        out = (self.predict(X)==Y).mean()
         ### END CODE
         return out
 
