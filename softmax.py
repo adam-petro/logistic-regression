@@ -66,13 +66,20 @@ class SoftmaxClassifier():
             totalcost: Average Negative Log Likelihood of w 
             gradient: The gradient of the average Negative Log Likelihood at w 
         """
+        #Initialization step
         cost = np.nan
         grad = np.zeros(W.shape)*np.nan
         Yk = (one_in_k_encoding(y, self.num_classes)) # may help - otherwise you may remove
+        
         ### YOUR CODE HERE 5 - 15 lines
+        
+        #We calculate this first, because we are using it twice
         softmax_matrix = softmax(np.dot(X,W))
+        
+        #Calculate the gradient and cost for softmax (Equations are from the note)
         cost = (-1/len(y))*np.sum(Yk*np.log(softmax_matrix))
         grad = (-(1/len(y))*np.dot(X.T,(Yk-softmax_matrix)))
+        
         ### END CODE
         return cost, grad
 
@@ -111,8 +118,7 @@ class SoftmaxClassifier():
             #sepperate X and y after shuffle
             temp_x = X_y[:,:-1]
             temp_y = X_y[:,-1]
-            #print(temp_y[:n_b].shape)
-            #print(temp_x[:n_b].shape)
+
             #Insert only the first n_b elements into the cost_grad
             cost,grad = self.cost_grad(temp_x[:n_b],temp_y[:n_b],W)
             
@@ -135,10 +141,9 @@ class SoftmaxClassifier():
            out: float - mean accuracy
         """
         out = 0
-        #Yk = (one_in_k_encoding(Y, self.num_classes))
-        #print(np.argmax(self.predict(X),axis=1))
-        out = (np.argmax(self.predict(X),axis=1)==Y).mean()
-        ### END CODE
+        #Using the 0-1 loss approach
+        out = (self.predict(X)==Y).mean()
+        
         return out
 
     def predict(self, X):
@@ -152,6 +157,9 @@ class SoftmaxClassifier():
         out = None
         ### YOUR CODE HERE - 1-4 lines
         out = softmax(np.dot(X,self.W))
+        
+        #The argmax tells us which column the largest element is in, this is also the label
+        out = np.argmax(out,axis=1)
         ### END CODE
         return out
 
