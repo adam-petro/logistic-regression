@@ -40,7 +40,6 @@ def one_in_k_encoding(vec, k):
        vec: numpy array - data to encode
        k: int - number of classes to encode to (0,...,k-1)
     """
-    #print(vec)
     n = vec.shape[0]
     enc = np.zeros((n, k))
     enc[np.arange(n), vec.astype(int)] = 1
@@ -143,7 +142,6 @@ class SoftmaxClassifier():
         out = 0
         #Using the 0-1 loss approach
         out = (self.predict(X)==Y).mean()
-        
         return out
 
     def predict(self, X):
